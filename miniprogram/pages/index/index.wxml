@@ -1,0 +1,168 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav-bar" wx:if="{{customNavBar}}">
+    <view class="nav-bar-content">
+      <view class="nav-title">客服助手</view>
+    </view>
+  </view>
+
+  <!-- 主要内容区域 -->
+  <view class="main-content">
+    <!-- Logo和标题 -->
+    <view class="header-section">
+      <view class="logo">
+        <image src="/images/logo.png" class="logo-image" mode="aspectFit"></image>
+      </view>
+      <view class="title">欢迎使用客服助手</view>
+      <view class="subtitle">为您提供专业的客服咨询服务</view>
+    </view>
+
+    <!-- 功能按钮区域 -->
+    <view class="action-section">
+      <!-- 扫码咨询 -->
+      <view class="action-card" bindtap="scanQRCode">
+        <view class="card-icon">
+          <image src="/images/scan-icon.png" class="icon-image" mode="aspectFit"></image>
+        </view>
+        <view class="card-content">
+          <view class="card-title">扫码咨询</view>
+          <view class="card-desc">扫描客服二维码快速接入</view>
+        </view>
+        <view class="card-arrow">
+          <image src="/images/arrow-right.png" class="arrow-image" mode="aspectFit"></image>
+        </view>
+      </view>
+
+      <!-- 在线客服 -->
+      <view class="action-card" bindtap="startChat">
+        <view class="card-icon">
+          <image src="/images/chat-icon.png" class="icon-image" mode="aspectFit"></image>
+        </view>
+        <view class="card-content">
+          <view class="card-title">在线客服</view>
+          <view class="card-desc">直接连接在线客服人员</view>
+        </view>
+        <view class="card-arrow">
+          <image src="/images/arrow-right.png" class="arrow-image" mode="aspectFit"></image>
+        </view>
+      </view>
+
+      <!-- 历史记录 -->
+      <view class="action-card" bindtap="viewHistory">
+        <view class="card-icon">
+          <image src="/images/history-icon.png" class="icon-image" mode="aspectFit"></image>
+        </view>
+        <view class="card-content">
+          <view class="card-title">历史记录</view>
+          <view class="card-desc">查看之前的咨询记录</view>
+        </view>
+        <view class="card-arrow">
+          <image src="/images/arrow-right.png" class="arrow-image" mode="aspectFit"></image>
+        </view>
+      </view>
+
+      <!-- 常见问题 -->
+      <view class="action-card" bindtap="viewFAQ">
+        <view class="card-icon">
+          <image src="/images/faq-icon.png" class="icon-image" mode="aspectFit"></image>
+        </view>
+        <view class="card-content">
+          <view class="card-title">常见问题</view>
+          <view class="card-desc">查看常见问题解答</view>
+        </view>
+        <view class="card-arrow">
+          <image src="/images/arrow-right.png" class="arrow-image" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+
+    <!-- 快速入口 -->
+    <view class="quick-section">
+      <view class="section-title">快速入口</view>
+      <view class="quick-grid">
+        <view class="quick-item" bindtap="quickAction" data-action="complaint">
+          <view class="quick-icon">
+            <image src="/images/complaint-icon.png" class="quick-image" mode="aspectFit"></image>
+          </view>
+          <view class="quick-text">投诉建议</view>
+        </view>
+        <view class="quick-item" bindtap="quickAction" data-action="feedback">
+          <view class="quick-icon">
+            <image src="/images/feedback-icon.png" class="quick-image" mode="aspectFit"></image>
+          </view>
+          <view class="quick-text">意见反馈</view>
+        </view>
+        <view class="quick-item" bindtap="quickAction" data-action="contact">
+          <view class="quick-icon">
+            <image src="/images/contact-icon.png" class="quick-image" mode="aspectFit"></image>
+          </view>
+          <view class="quick-text">联系我们</view>
+        </view>
+        <view class="quick-item" bindtap="quickAction" data-action="about">
+          <view class="quick-icon">
+            <image src="/images/about-icon.png" class="quick-image" mode="aspectFit"></image>
+          </view>
+          <view class="quick-text">关于我们</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 服务状态 -->
+    <view class="status-section">
+      <view class="status-card">
+        <view class="status-indicator {{serviceStatus === 'online' ? 'online' : 'offline'}}"></view>
+        <view class="status-text">
+          <view class="status-title">服务状态</view>
+          <view class="status-desc">{{serviceStatusText}}</view>
+        </view>
+        <view class="status-time">{{currentTime}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部信息 -->
+  <view class="footer-section">
+    <view class="footer-text">客服时间：周一至周日 9:00-21:00</view>
+    <view class="footer-text">如有紧急问题，请拨打客服热线</view>
+    <view class="footer-phone" bindtap="makeCall">400-123-4567</view>
+  </view>
+</view>
+
+<!-- 加载提示 -->
+<view class="loading-overlay" wx:if="{{loading}}">
+  <view class="loading-content">
+    <view class="loading-spinner"></view>
+    <view class="loading-text">{{loadingText}}</view>
+  </view>
+</view>
+
+<!-- 客服选择弹窗 -->
+<view class="modal-overlay" wx:if="{{showStaffModal}}" bindtap="hideStaffModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <view class="modal-title">选择客服</view>
+      <view class="modal-close" bindtap="hideStaffModal">
+        <image src="/images/close-icon.png" class="close-image" mode="aspectFit"></image>
+      </view>
+    </view>
+    <view class="modal-body">
+      <scroll-view class="staff-list" scroll-y="true">
+        <view class="staff-item" wx:for="{{staffList}}" wx:key="id" bindtap="selectStaff" data-staff="{{item}}">
+          <view class="staff-avatar">
+            <image src="{{item.avatar || '/images/default-avatar.png'}}" class="avatar-image" mode="aspectFill"></image>
+            <view class="status-dot {{item.status}}"></view>
+          </view>
+          <view class="staff-info">
+            <view class="staff-name">{{item.name}}</view>
+            <view class="staff-desc">{{item.description}}</view>
+            <view class="staff-status">{{item.statusText}}</view>
+          </view>
+          <view class="staff-action">
+            <view class="action-btn {{item.status === 'online' ? 'primary' : 'disabled'}}">{{item.status === 'online' ? '开始咨询' : '暂不可用'}}</view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</view>

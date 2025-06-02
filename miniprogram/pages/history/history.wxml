@@ -1,0 +1,84 @@
+<!--pages/history/history.wxml-->
+<view class="container">
+  <!-- 顶部筛选栏 -->
+  <view class="filter-bar">
+    <view class="filter-tabs">
+      <view class="tab-item {{activeTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">
+        全部
+      </view>
+      <view class="tab-item {{activeTab === 'ongoing' ? 'active' : ''}}" bindtap="switchTab" data-tab="ongoing">
+        进行中
+      </view>
+      <view class="tab-item {{activeTab === 'completed' ? 'active' : ''}}" bindtap="switchTab" data-tab="completed">
+        已完成
+      </view>
+    </view>
+    <view class="filter-actions">
+      <view class="search-btn" bindtap="showSearch">
+        <icon type="search" size="16" color="#666"></icon>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索框 -->
+  <view class="search-box {{showSearchBox ? 'show' : ''}}">
+    <view class="search-input">
+      <icon type="search" size="16" color="#999"></icon>
+      <input placeholder="搜索咨询记录" placeholder-class="placeholder" bindinput="onSearchInput" value="{{searchValue}}" />
+      <view class="search-cancel" bindtap="hideSearch">取消</view>
+    </view>
+  </view>
+
+  <!-- 咨询记录列表 -->
+  <view class="history-list" wx:if="{{filteredList.length > 0}}">
+    <view class="history-item" wx:for="{{filteredList}}" wx:key="id" bindtap="openChat" data-id="{{item.id}}">
+      <view class="item-header">
+        <view class="staff-info">
+          <image class="staff-avatar" src="{{item.staffAvatar || '/images/default_avatar.png'}}" mode="aspectFill"></image>
+          <view class="staff-details">
+            <view class="staff-name">{{item.staffName || '客服'}}</view>
+            <view class="consultation-type">{{item.category}}</view>
+          </view>
+        </view>
+        <view class="status-badge {{item.status}}">
+          {{item.statusText}}
+        </view>
+      </view>
+      
+      <view class="item-content">
+        <view class="last-message">{{item.lastMessage}}</view>
+        <view class="message-time">{{item.lastMessageTime}}</view>
+      </view>
+      
+      <view class="item-footer">
+        <view class="consultation-info">
+          <text class="info-item">创建时间：{{item.createTime}}</text>
+          <text class="info-item" wx:if="{{item.duration}}">咨询时长：{{item.duration}}</text>
+        </view>
+        <view class="item-actions">
+          <view class="action-btn" wx:if="{{item.status === 'ongoing'}}" bindtap="continueChat" data-id="{{item.id}}">
+            继续咨询
+          </view>
+          <view class="action-btn secondary" bindtap="viewDetails" data-id="{{item.id}}">
+            查看详情
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{filteredList.length === 0 && !loading}}">
+    <image class="empty-icon" src="/images/empty_history.png" mode="aspectFit"></image>
+    <view class="empty-text">暂无咨询记录</view>
+    <view class="empty-desc">您还没有任何咨询记录，去咨询一下吧</view>
+    <view class="empty-action" bindtap="goToConsultation">
+      立即咨询
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <view class="loading-text">加载中...</view>
+  </view>
+</view>

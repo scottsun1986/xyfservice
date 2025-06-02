@@ -1,0 +1,322 @@
+<!--pages/chat/chat.wxml-->
+<view class="chat-container">
+  <!-- 顶部导航栏 -->
+  <view class="chat-header">
+    <view class="header-left">
+      <view class="back-btn" bindtap="goBack">
+        <image src="/images/icons/back.svg" class="back-icon"></image>
+      </view>
+      <view class="service-info">
+        <view class="service-name">{{serviceStaff.name || '客服'}}</view>
+        <view class="service-status">
+          <view class="status-dot {{serviceStaff.status}}"></view>
+          <text class="status-text">{{serviceStaff.statusText}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="header-right">
+      <view class="action-btn" bindtap="makeCall">
+        <image src="/images/icons/phone.svg" class="action-icon"></image>
+      </view>
+      <view class="action-btn" bindtap="showMore">
+        <image src="/images/icons/more.svg" class="action-icon"></image>
+      </view>
+    </view>
+  </view>
+
+  <!-- 聊天消息区域 -->
+  <scroll-view 
+    class="chat-messages" 
+    scroll-y="{{true}}"
+    scroll-top="{{scrollTop}}"
+    scroll-into-view="{{scrollIntoView}}"
+    bindscrolltoupper="loadMoreMessages"
+    enhanced="{{true}}"
+    show-scrollbar="{{false}}"
+  >
+    <!-- 加载更多提示 -->
+    <view class="load-more" wx:if="{{hasMoreMessages}}">
+      <view class="loading" wx:if="{{loadingMore}}">
+        <view class="spinner"></view>
+        <text>加载中...</text>
+      </view>
+      <view class="load-more-btn" wx:else bindtap="loadMoreMessages">
+        <text>点击加载更多消息</text>
+      </view>
+    </view>
+
+    <!-- 消息列表 -->
+    <view class="message-list">
+      <block wx:for="{{messages}}" wx:key="id">
+        <view class="message-item {{item.type}}" id="msg-{{item.id}}">
+          
+          <!-- 系统消息 -->
+          <view class="system-message" wx:if="{{item.type === 'system'}}">
+            <view class="system-content">{{item.content}}</view>
+            <view class="system-time">{{item.time}}</view>
+          </view>
+
+          <!-- 普通消息 -->
+          <view class="normal-message" wx:else>
+            <!-- 头像 -->
+            <view class="message-avatar" wx:if="{{item.type === 'received'}}">
+              <image src="{{item.avatar || '/images/default-avatar.png'}}" class="avatar-img"></image>
+            </view>
+
+            <!-- 消息内容区 -->
+            <view class="message-content">
+              <!-- 消息气泡 -->
+              <view class="message-bubble {{item.type}}" bindlongpress="showMessageMenu" data-message="{{item}}">
+                
+                <!-- 文本消息 -->
+                <view class="text-content" wx:if="{{item.messageType === 'text'}}">
+                  {{item.content}}
+                </view>
+
+                <!-- 图片消息 -->
+                <view class="image-content" wx:elif="{{item.messageType === 'image'}}">
+                  <image 
+                    src="{{item.content}}" 
+                    class="message-image"
+                    mode="aspectFit"
+                    bindtap="previewImage"
+                    data-src="{{item.content}}"
+                    data-urls="{{item.imageUrls}}"
+                  ></image>
+                </view>
+
+                <!-- 语音消息 -->
+                <view class="voice-content" wx:elif="{{item.messageType === 'voice'}}" bindtap="playVoice" data-voice="{{item}}">
+                  <view class="voice-icon {{item.playing ? 'playing' : ''}}">
+                    <image src="/images/icons/voice.svg" class="voice-img"></image>
+                  </view>
+                  <view class="voice-duration">{{item.duration}}"</view>
+                </view>
+
+                <!-- 文件消息 -->
+                <view class="file-content" wx:elif="{{item.messageType === 'file'}}" bindtap="downloadFile" data-file="{{item}}">
+                  <view class="file-icon">
+                    <image src="/images/icons/file.svg" class="file-img"></image>
+                  </view>
+                  <view class="file-info">
+                    <view class="file-name">{{item.fileName}}</view>
+                    <view class="file-size">{{item.fileSize}}</view>
+                  </view>
+                </view>
+
+                <!-- 位置消息 -->
+                <view class="location-content" wx:elif="{{item.messageType === 'location'}}" bindtap="openLocation" data-location="{{item}}">
+                  <view class="location-info">
+                    <view class="location-name">{{item.locationName}}</view>
+                    <view class="location-address">{{item.address}}</view>
+                  </view>
+                  <image src="{{item.mapSnapshot}}" class="location-map"></image>
+                </view>
+
+              </view>
+
+              <!-- 消息状态和时间 -->
+              <view class="message-meta">
+                <view class="message-time">{{item.time}}</view>
+                <view class="message-status" wx:if="{{item.type === 'sent'}}">
+                  <image 
+                    src="/images/icons/{{item.status}}.svg" 
+                    class="status-icon"
+                    wx:if="{{item.status !== 'read'}}"
+                  ></image>
+                  <text class="status-text" wx:if="{{item.status === 'read'}}">已读</text>
+                </view>
+              </view>
+            </view>
+
+            <!-- 发送方头像 -->
+            <view class="message-avatar" wx:if="{{item.type === 'sent'}}">
+              <image src="{{userInfo.avatar || '/images/default-avatar.png'}}" class="avatar-img"></image>
+            </view>
+          </view>
+
+        </view>
+      </block>
+    </view>
+
+    <!-- 正在输入提示 -->
+    <view class="typing-indicator" wx:if="{{isTyping}}">
+      <view class="typing-avatar">
+        <image src="{{serviceStaff.avatar || '/images/default-avatar.png'}}" class="avatar-img"></image>
+      </view>
+      <view class="typing-content">
+        <view class="typing-dots">
+          <view class="dot"></view>
+          <view class="dot"></view>
+          <view class="dot"></view>
+        </view>
+        <text class="typing-text">正在输入...</text>
+      </view>
+    </view>
+
+  </scroll-view>
+
+  <!-- 底部输入区域 -->
+  <view class="chat-input">
+    <!-- 输入工具栏 -->
+    <view class="input-toolbar">
+      <!-- 语音按钮 -->
+      <view class="tool-btn" bindtap="toggleVoiceInput">
+        <image src="/images/icons/{{voiceMode ? 'keyboard' : 'voice'}}.svg" class="tool-icon"></image>
+      </view>
+
+      <!-- 输入框区域 -->
+      <view class="input-area">
+        <!-- 文本输入框 -->
+        <textarea 
+          wx:if="{{!voiceMode}}"
+          class="text-input"
+          placeholder="请输入消息..."
+          value="{{inputText}}"
+          bindinput="onInputChange"
+          bindfocus="onInputFocus"
+          bindblur="onInputBlur"
+          bindconfirm="sendTextMessage"
+          auto-height="{{true}}"
+          max-height="{{100}}"
+          cursor-spacing="{{10}}"
+          hold-keyboard="{{true}}"
+        ></textarea>
+
+        <!-- 语音输入按钮 -->
+        <view 
+          wx:else
+          class="voice-input {{recording ? 'recording' : ''}}"
+          bindtouchstart="startRecord"
+          bindtouchend="stopRecord"
+          bindtouchcancel="cancelRecord"
+        >
+          <text class="voice-text">{{recording ? '松开发送' : '按住说话'}}</text>
+        </view>
+      </view>
+
+      <!-- 表情按钮 -->
+      <view class="tool-btn" bindtap="toggleEmoji" wx:if="{{!voiceMode}}">
+        <image src="/images/icons/emoji.svg" class="tool-icon"></image>
+      </view>
+
+      <!-- 更多按钮 -->
+      <view class="tool-btn" bindtap="toggleMoreActions">
+        <image src="/images/icons/add.svg" class="tool-icon"></image>
+      </view>
+
+      <!-- 发送按钮 -->
+      <view 
+        class="send-btn {{inputText.trim() ? 'active' : ''}}"
+        bindtap="sendTextMessage"
+        wx:if="{{!voiceMode && inputText.trim()}}"
+      >
+        <text>发送</text>
+      </view>
+    </view>
+
+    <!-- 表情面板 -->
+    <view class="emoji-panel" wx:if="{{showEmoji}}">
+      <scroll-view class="emoji-list" scroll-x="{{true}}">
+        <view class="emoji-category">
+          <block wx:for="{{emojiList}}" wx:key="code">
+            <view class="emoji-item" bindtap="selectEmoji" data-emoji="{{item}}">
+              <text class="emoji-char">{{item.char}}</text>
+            </view>
+          </block>
+        </view>
+      </scroll-view>
+    </view>
+
+    <!-- 更多操作面板 -->
+    <view class="more-actions" wx:if="{{showMoreActions}}">
+      <view class="action-grid">
+        <view class="action-item" bindtap="chooseImage">
+          <view class="action-icon">
+            <image src="/images/icons/image.svg" class="icon"></image>
+          </view>
+          <text class="action-text">照片</text>
+        </view>
+        <view class="action-item" bindtap="chooseVideo">
+          <view class="action-icon">
+            <image src="/images/icons/video.svg" class="icon"></image>
+          </view>
+          <text class="action-text">视频</text>
+        </view>
+        <view class="action-item" bindtap="chooseFile">
+          <view class="action-icon">
+            <image src="/images/icons/file.svg" class="icon"></image>
+          </view>
+          <text class="action-text">文件</text>
+        </view>
+        <view class="action-item" bindtap="chooseLocation">
+          <view class="action-icon">
+            <image src="/images/icons/location.svg" class="icon"></image>
+          </view>
+          <text class="action-text">位置</text>
+        </view>
+        <view class="action-item" bindtap="takePhoto">
+          <view class="action-icon">
+            <image src="/images/icons/camera.svg" class="icon"></image>
+          </view>
+          <text class="action-text">拍照</text>
+        </view>
+        <view class="action-item" bindtap="scanCode">
+          <view class="action-icon">
+            <image src="/images/icons/scan.svg" class="icon"></image>
+          </view>
+          <text class="action-text">扫码</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 语音录制提示 -->
+  <view class="voice-recording" wx:if="{{recording}}">
+    <view class="recording-modal">
+      <view class="recording-icon">
+        <image src="/images/icons/voice-recording.svg" class="recording-img"></image>
+      </view>
+      <view class="recording-text">正在录音...</view>
+      <view class="recording-time">{{recordingTime}}s</view>
+      <view class="recording-tip">上滑取消发送</view>
+    </view>
+  </view>
+
+  <!-- 消息操作菜单 -->
+  <view class="message-menu" wx:if="{{showMessageMenu}}" bindtap="hideMessageMenu">
+    <view class="menu-content" catchtap="">
+      <view class="menu-item" bindtap="copyMessage" wx:if="{{selectedMessage.messageType === 'text'}}">
+        <image src="/images/icons/copy.svg" class="menu-icon"></image>
+        <text>复制</text>
+      </view>
+      <view class="menu-item" bindtap="forwardMessage">
+        <image src="/images/icons/forward.svg" class="menu-icon"></image>
+        <text>转发</text>
+      </view>
+      <view class="menu-item" bindtap="deleteMessage" wx:if="{{selectedMessage.type === 'sent'}}">
+        <image src="/images/icons/delete.svg" class="menu-icon"></image>
+        <text>删除</text>
+      </view>
+      <view class="menu-item" bindtap="recallMessage" wx:if="{{selectedMessage.type === 'sent' && selectedMessage.canRecall}}">
+        <image src="/images/icons/recall.svg" class="menu-icon"></image>
+        <text>撤回</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 网络状态提示 -->
+  <view class="network-status" wx:if="{{!isConnected}}">
+    <view class="status-content">
+      <image src="/images/icons/wifi-off.svg" class="status-icon"></image>
+      <text class="status-text">网络连接已断开</text>
+      <view class="retry-btn" bindtap="reconnect">
+        <text>重试</text>
+      </view>
+    </view>
+  </view>
+
+</view>
+
+<!-- 自定义导航栏占位 -->
+<view class="nav-placeholder" wx:if="{{customNavBar}}"></view>

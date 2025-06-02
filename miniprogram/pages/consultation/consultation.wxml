@@ -1,0 +1,58 @@
+<!--pages/consultation/consultation.wxml-->
+<view class="container">
+  <!-- 顶部搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input">
+      <icon type="search" size="16" color="#999"></icon>
+      <input placeholder="搜索问题或关键词" placeholder-class="placeholder" bindinput="onSearchInput" value="{{searchValue}}" />
+    </view>
+  </view>
+
+  <!-- 快速咨询分类 -->
+  <view class="quick-categories">
+    <view class="category-title">快速咨询</view>
+    <view class="category-list">
+      <view class="category-item" wx:for="{{categories}}" wx:key="id" bindtap="onCategoryTap" data-id="{{item.id}}">
+        <image class="category-icon" src="{{item.icon}}" mode="aspectFit"></image>
+        <text class="category-name">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 常见问题 -->
+  <view class="faq-section">
+    <view class="section-title">常见问题</view>
+    <view class="faq-list">
+      <view class="faq-item" wx:for="{{faqList}}" wx:key="id" bindtap="onFaqTap" data-id="{{item.id}}">
+        <view class="faq-question">{{item.question}}</view>
+        <view class="faq-arrow">></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 在线客服入口 -->
+  <view class="service-section">
+    <view class="section-title">在线服务</view>
+    <view class="service-list">
+      <view class="service-item" bindtap="startChat">
+        <view class="service-info">
+          <view class="service-name">在线客服</view>
+          <view class="service-desc">专业客服为您解答</view>
+        </view>
+        <view class="service-status online">在线</view>
+      </view>
+      <view class="service-item" bindtap="makeCall">
+        <view class="service-info">
+          <view class="service-name">电话咨询</view>
+          <view class="service-desc">400-123-4567</view>
+        </view>
+        <view class="service-action">拨打</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 浮动客服按钮 -->
+  <view class="float-service" bindtap="startChat">
+    <image class="float-icon" src="/images/icon_service.png" mode="aspectFit"></image>
+  </view>
+</view>

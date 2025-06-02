@@ -1,0 +1,250 @@
+/**app.wxss**/
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 200rpx 0;
+  box-sizing: border-box;
+}
+
+/* 全局样式 */
+page {
+  background-color: #f8f8f8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* 通用按钮样式 */
+.btn {
+  display: inline-block;
+  padding: 20rpx 40rpx;
+  margin: 20rpx;
+  background-color: #07c160;
+  color: white;
+  border-radius: 8rpx;
+  text-align: center;
+  font-size: 28rpx;
+  border: none;
+}
+
+.btn:active {
+  background-color: #06ad56;
+}
+
+.btn-secondary {
+  background-color: #ededed;
+  color: #000000;
+}
+
+.btn-secondary:active {
+  background-color: #d9d9d9;
+}
+
+.btn-danger {
+  background-color: #fa5151;
+}
+
+.btn-danger:active {
+  background-color: #e64545;
+}
+
+/* 输入框样式 */
+.input {
+  width: 100%;
+  padding: 20rpx;
+  border: 2rpx solid #e5e5e5;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  background-color: white;
+}
+
+.input:focus {
+  border-color: #07c160;
+}
+
+/* 卡片样式 */
+.card {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+/* 列表项样式 */
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: 30rpx 20rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+  background-color: white;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item:active {
+  background-color: #f8f8f8;
+}
+
+/* 头像样式 */
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.avatar-large {
+  width: 120rpx;
+  height: 120rpx;
+}
+
+/* 文本样式 */
+.text-primary {
+  color: #07c160;
+}
+
+.text-secondary {
+  color: #888888;
+  font-size: 24rpx;
+}
+
+.text-danger {
+  color: #fa5151;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* 间距样式 */
+.mt-10 {
+  margin-top: 20rpx;
+}
+
+.mt-20 {
+  margin-top: 40rpx;
+}
+
+.mb-10 {
+  margin-bottom: 20rpx;
+}
+
+.mb-20 {
+  margin-bottom: 40rpx;
+}
+
+.ml-10 {
+  margin-left: 20rpx;
+}
+
+.mr-10 {
+  margin-right: 20rpx;
+}
+
+.p-10 {
+  padding: 20rpx;
+}
+
+.p-20 {
+  padding: 40rpx;
+}
+
+/* 布局样式 */
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-between {
+  justify-content: space-between;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+/* 加载样式 */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx;
+  color: #888888;
+}
+
+/* 空状态样式 */
+.empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 100rpx 40rpx;
+  color: #888888;
+}
+
+.empty-icon {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 20rpx;
+  opacity: 0.5;
+}
+
+/* 消息气泡样式 */
+.message-bubble {
+  max-width: 70%;
+  padding: 20rpx 30rpx;
+  border-radius: 20rpx;
+  margin: 10rpx 0;
+  word-wrap: break-word;
+}
+
+.message-bubble.sent {
+  background-color: #07c160;
+  color: white;
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.message-bubble.received {
+  background-color: white;
+  color: #333333;
+  align-self: flex-start;
+  margin-right: auto;
+}
+
+/* 状态指示器 */
+.status-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 10rpx;
+}
+
+.status-online {
+  background-color: #07c160;
+}
+
+.status-offline {
+  background-color: #888888;
+}
+
+.status-busy {
+  background-color: #fa5151;
+}
